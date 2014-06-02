@@ -1,0 +1,160 @@
+<?php
+
+  session_start();
+    if (!empty($_SESSION['timeout'])) {
+	$session_life = time() - $_SESSION['timeout'];
+	$inactive = 600;
+	if ($session_life > $inactive) {
+		header("Location: ../loginaccess/logout.php");
+	}
+    }
+
+    $_SESSION['timeout'] = time();
+    if (!isset($_SESSION[username])) {
+    	header("Location: ../loginaccess/adminlogin.php");
+    	exit ;
+    }
+  
+    require_once('../header.php');
+    require_once('../recaptchalib.php');
+    require_once('../dbConnection.php');
+  
+
+      $id = $_GET['id'];
+      $link_id = db_connect('bizz360h_database');
+      $query = "SELECT * FROM bizz360_tempYES_subscriber where id='$id'";
+      $result = mysql_query($query); 
+      while($row = mysql_fetch_array($result)):
+  
+      $access = $_GET['access'];
+?>
+
+<script language="javascript">
+    document.title = "Bizz360 | User Profile ";
+</script>
+
+
+      <div id="userguide" class="userguide">
+        <div class="userguide-page">
+            <div class="row-fluid">
+            <div class="help"> 
+                    <a href="admin_page.php" class="helplink" style="font-size: 1em;">Admin Page</a>
+                </div>
+                <div class="help"> 
+                    <a href="yesplanmembers_view.php" class="helplink" style="font-size: 1em;">Business Plan Members</a>
+                </div>
+                <div class="help">
+                    <a href="academic_members_list.php" class="helplink"style="font-size: 1em;">Academic Members</a>
+                </div>
+                 <div class="help">
+                    <a href="superuser_help.php" class="helplink"style="font-size: 1em;">Super User Help</a>
+                </div>
+                <div class="help">
+                    <a href="logout.php" class="helplink"style="font-size: 1em;">Admin Logout</a>
+                </div>
+            </div>
+        </div>
+        </div>
+        
+
+<section class="feats home">
+    <div class="container" style="margin-top: 30px;"> 
+        <div class="profile_container">
+            <!-- main container Ends -->
+            <?php
+            if($access == "ok")
+            {
+                echo"<p style='color: #1A8610; background-color: #F5F5F5; text-align: center; box-shadow: 0 0 5px #098814;'>The Access code has been sent successfully.</p>";
+            }
+            else if($access == "")
+            {
+                echo"<p></p>";
+            }
+            ?>
+            <div class="profile_block1">
+                <div><?php echo $row['firstname']; ?> <?php echo $row['lastname']; ?></div>
+            </div>
+                       
+          
+            <div class="profile_block2">
+                <div class="profile_pix">
+                    <form style="margin-top:20px; width: 40%; margin: 0 auto" class="well span8 contact-form" action="send_code_yesplan.php" method="post" enctype="multipart/form-data" id="form" name="form">   
+                       <table class="top_table">
+                                        <input type="hidden" value="<?php echo $id ?>" name="userid" class="span4"/>
+                                        <input type="hidden" value="<?php echo $row['email']; ?>" name="email" class="span4"/>
+                                        
+                                    <tr style="color: black;">
+                                        <td class="code_describe">Access Code</td>
+                                    </tr>
+                                    <tr>
+                                       <td class="code_code"><input id="code" type="text" placeholder="Access Code" name="code" class="span4" /> </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="code_btn"><input class="btn btn-large" type="submit" value="Send Code" name="submit" id="submit" style="margin-left: 6px;" /></td>
+                                    </tr>
+                       </table>
+                       </form>
+                </div>
+            
+            
+                <div class="profile_first">
+                    <table class="top_table">
+                        <tr style="color: black;">
+                            <td class="profile_title">College / School :</td>
+                            <td class="profile_info"><?php echo $row['school']; ?></td>
+                        </tr>
+                         <tr style="color: black;">
+                            <td class="profile_title" >Company :</td>
+                            <td class="profile_info" ><?php echo $row['company']; ?></td>
+                        </tr>
+                         <tr style="color: black;">
+                            <td class="profile_title">Category :</td>
+                            <td class="profile_info"><?php echo $row['category']; ?></td>
+                        </tr>
+                    </table>
+                </div>
+           </div>
+           
+           <div class="profile_block3">
+                    <table class="top_table">
+                        <tr style="color: black;">
+                            <td class="profile_title">E-Mail / Username :</td>
+                            <td class="profile_info"><?php echo $row['email']; ?></td>
+                            <td class="profile_title" >Date of Birth :</td>
+                            <td class="profile_info" ><?php echo $row['dateofbirth']; ?></td>
+                        </tr>
+                        <tr>
+                            <td class="profile_title" >Status :</td>
+                            <td class="profile_info" ><?php echo $row['status']; ?></td>
+                            <td class="profile_title">Type :</td>
+                            <td class="profile_info"><?php echo $row['type']; ?></td>
+                        </tr>
+                         <tr>
+                            <td class="profile_title" >Access Code :</td>
+                            <td class="profile_info" ><?php echo $row['access_code']; ?></td>
+                            <td class="profile_title">Joined Date :</td>
+                            <td class="profile_info"><?php echo $row['date']; ?></td>
+                        </tr>
+                 </table>
+           </div>
+           
+            <div class="profile_block4">
+            <table class="top_table">
+                        <tr style="color: black;">
+                            <td class="profile_title">Description</td>
+                            <td class="profile_info"><?php echo $row['description']; ?></td>
+                        </tr>
+            </table>
+           </div>
+           
+
+                        
+        <?php endwhile ?> 
+        <!-- main container Starts -->
+        
+                        
+        </div>
+    </div>
+</section>
+
+<?php require_once('../footer.php'); ?>
